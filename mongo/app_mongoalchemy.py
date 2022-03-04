@@ -1,19 +1,49 @@
 from server_mongoalchemy import Author, Book
+from flask import Flask, request
 
-mark_pilgrim = Author(name='Mark Pilgrim')
-dive = Book(title='Dive into Python', author=mark_pilgrim, year=2004)
+app = Flask(__name__)
 
-mark_pilgrim.save()
-dive.save()
+@app.route("/update")
+def update():
+    a = request.args.get('author')
+    b = request.args.get('book')
+    y = request.args.get('year')
+    author = Author(name=a)
+    book = Book(title=b, author=author, year=int(y))
+    author.save()
+    book.save()
+    return 'Added'
 
-author = Author.query.filter(Author.name == 'Mark Pilgrim').first()
-book = Book.query.filter(Book.year == 2004).first()
+@app.route("/author", methods=["GET", "POST"])
+def author_query():
+    a = request.args.get('name')
+    author = Author.query.filter(Author.name == a).first()
+    try:
+       return author.name
+    except:
+       return ("Author not found")
 
-print("Author name: ", author.name)
-print("Book title: ", book.title)
+@app.route("/book", methods=["GET", "POST"])
+def book_query():
+    b = request.args.get('title')
+    book = Book.query.filter(Book.title == b).first()
+    try:
+       return book.title
+    except:
+       return ("Book not found")
 
-#author.name = 'Vipul Sharma'
-#author.save()
+@app.route("/author/update/", methods=["GET", "POST"])
+def update_authorname():
+    a = request.args.get('original')
+    b = request.args.get('new')
+    author = Author.query.filter(Author.name == a).first()
+    author.name = b 
+    author.save()
+    return 'Saved'
 
-remove_author = Author.query.filter(Author.name == 'Vipul Sharma').first()
-remove_author.remove()
+@app.route("/author/delete", methods=["GET", "POST"])
+def delete_author():
+    a = request.args.get('author')
+    remove_author = Author.query.filter(Author.name == a).first()
+    remove_author.remove()
+    return 'Removed'
