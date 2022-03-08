@@ -1,0 +1,16 @@
+
+<html>
+    <head>
+        <title>User CRUD Operations</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div class="main-container">
+            <h1>USER CRUD</h1>
+            <button type="button" onclick="window.location.href='{{ url_for('users.create') }}';">CREATE</button>
+            <button type="button" onclick="window.location.href='{{ url_for('users.get') }}';">GET</button>
+            <button type="button" onclick="window.location.href='{{ url_for('users.update') }}';">UPDATE</button>
+            <button type="button" onclick="window.location.href='{{ url_for('users.delete') }}';">DELETE</button>
+        </div>
+    </body>
+</html>

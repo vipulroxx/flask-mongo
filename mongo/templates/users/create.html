@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>User CRUD Operations</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div class="container">
+            <h1>CREATE<h1>
+            <form method="post">
+                <label for="author">Author</label>
+                <input name="author" id="author" value="{{ request.form['author'] }}" required>
+                <label for="book">Book</label>
+                <input name="book" id="book" value="{{ request.form['book'] }}" required>
+                <label for="year">Year</label>
+                <input name="year" id="year" value="{{ request.form['year'] }}" required>
+                <input name="submit" type="submit" value="Save">
+            </form>
+        </div>
+        {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
+        <button type="button" onclick="window.location.href='{{ url_for('users.index') }}';">BACK</button>
+    </body>
+</html>

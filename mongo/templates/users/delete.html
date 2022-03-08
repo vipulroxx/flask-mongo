@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>User CRUD Operations</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div class="container">
+            <h1>DELETE BOOK<h1>
+            <form method="post">
+                <label for="title">Title</label>
+                <input name="title" id="title" value="{{ request.form['title'] }}" required>
+                <input name="submit" type="submit" value="Save">
+            </form>
+        </div>
+        {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
+        <button type="button" onclick="window.location.href='{{ url_for('users.index') }}';">BACK</button>
+    </body>
+</html>
+

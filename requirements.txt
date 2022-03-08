@@ -2,13 +2,16 @@ certifi==2021.10.8
 charset-normalizer==2.0.12
 click==8.0.4
 Flask==2.0.3
+flask-marshmallow==0.14.0
 Flask-MongoAlchemy==0.7.2
 idna==3.3
 itsdangerous==2.1.0
 Jinja2==3.0.3
 MarkupSafe==2.1.0
+marshmallow==3.14.1
 MongoAlchemy==0.19
 pymongo==2.8.1
 requests==2.27.1
+six==1.16.0
 urllib3==1.26.8
 Werkzeug==2.0.3
