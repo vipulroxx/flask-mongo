@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <title>User CRUD Operations</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <div class="container">
+            <h1>GET AUTHOR DETAILS<h1>
+            <form method="post">
+                <label for="author">Author Name</label>
+                <input name="author" id="author" value="{{ request.form['author'] }}" >
+                <input name="submit" type="submit" value="Submit">
+            </form>
+        </div>
+        <table class="book-details">
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Year</th>
+            <tr>
+        {% for book in books %}
+            <tr>
+                <td>{{ book['title'] }}</td>
+                <td>{{ book['author']['name'] }}</td>
+                <td>{{ book['year'] }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        <button type="button" onclick="window.location.href='{{ url_for('users.index') }}';">BACK</button>
+    </body>
+</html>

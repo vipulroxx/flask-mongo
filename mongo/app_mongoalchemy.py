@@ -1,49 +1,76 @@
-from server_mongoalchemy import Author, Book
-from flask import Flask, request
+import pprint
+from mongo.server_mongoalchemy import Author, Book, AuthorSchema, BookSchema
+from flask import (Flask, request, Blueprint, flash, g, redirect, render_template, url_for)
+from marshmallow import ValidationError
 
-app = Flask(__name__)
+bp = Blueprint('users', __name__, url_prefix='/users')
 
-@app.route("/update")
+@bp.route("/index", methods=["GET", "POST"])
+def index():
+    return render_template('users/index.html')
+
+@bp.route("/create", methods=["GET", "POST"])
+def create():
+    if request.method == "POST":
+        a = request.form['author']
+        b = request.form['book']
+        y = request.form['year']
+        e = 0
+        author_schema = AuthorSchema()
+        try:
+            author = author_schema.load({"name":a})
+        except ValidationError as err:
+            for messages in err.messages.values():
+                for message in messages:
+                    flash(message)
+            e += 1
+        book_schema = BookSchema()
+        try:
+            book = book_schema.load({"title":b, "author": {"name": a}, "year":int(y)})
+        except ValidationError as err:
+            flash(message.pop(0) for message in err.messages.values())
+            e += 1
+        if e == 0:
+            author_res = Author(name=a)
+            author_res.save()
+            book_res = Book(title=b, author=author_res, year=int(y))
+            book_res.save()
+            flash('Saved')
+    return render_template('users/create.html') 
+
+@bp.route("/book/get", methods=["GET", "POST"])
+def get():
+    if request.method == "POST":
+        a = request.form['author']
+        book_schema = BookSchema(many=True)
+        try:
+            book = Book.query.filter(Book.author.name == a).all()
+            book_result = book_schema.dump(book)
+            return render_template('users/get.html', books=book_result) 
+        except:
+            flash("Book not found")
+            return render_template('users/get.html') 
+    return render_template('users/get.html') 
+
+@bp.route("/book/update/", methods=["GET", "POST"])
 def update():
-    a = request.args.get('author')
-    b = request.args.get('book')
-    y = request.args.get('year')
-    author = Author(name=a)
-    book = Book(title=b, author=author, year=int(y))
-    author.save()
-    book.save()
-    return 'Added'
+    if request.method == "POST":
+        a = request.form['author']
+        b = request.form['title']
+        y = request.form['year']
+        book = Book.query.filter(Book.title == b).first()
+        book.title = b 
+        book.author.name = a
+        book.year = int(y)
+        book.save()
+        flash("Saved")
+    return render_template('users/update.html') 
 
-@app.route("/author", methods=["GET", "POST"])
-def author_query():
-    a = request.args.get('name')
-    author = Author.query.filter(Author.name == a).first()
-    try:
-       return author.name
-    except:
-       return ("Author not found")
-
-@app.route("/book", methods=["GET", "POST"])
-def book_query():
-    b = request.args.get('title')
-    book = Book.query.filter(Book.title == b).first()
-    try:
-       return book.title
-    except:
-       return ("Book not found")
-
-@app.route("/author/update/", methods=["GET", "POST"])
-def update_authorname():
-    a = request.args.get('original')
-    b = request.args.get('new')
-    author = Author.query.filter(Author.name == a).first()
-    author.name = b 
-    author.save()
-    return 'Saved'
-
-@app.route("/author/delete", methods=["GET", "POST"])
-def delete_author():
-    a = request.args.get('author')
-    remove_author = Author.query.filter(Author.name == a).first()
-    remove_author.remove()
-    return 'Removed'
+@bp.route("/book/delete", methods=["GET", "POST"])
+def delete():
+    if request.method == "POST":
+        b = request.form['title']
+        book = Book.query.filter(Book.title == b).first()
+        book.remove()
+        flash('Deleted')
+    return render_template('users/delete.html')
