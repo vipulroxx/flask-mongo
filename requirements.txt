@@ -16,7 +16,7 @@ MongoAlchemy==0.19
 packaging==21.3
 pluggy==1.0.0
 py==1.11.0
-pymongo==3.5.1
+pymongo==2.8.1
 pyparsing==3.0.7
 pytest==7.0.1
 requests==2.27.1
