@@ -1,8 +1,12 @@
 import pprint
+from pymongo import MongoClient
 from mongo.server_mongoalchemy import Author, Book, AuthorSchema, BookSchema
 from flask import (Flask, request, Blueprint, flash, g, redirect, render_template, url_for)
 from marshmallow import ValidationError
 
+client = MongoClient("mongodb://localhost:27017")
+
+db = client.library
 bp = Blueprint('users', __name__, url_prefix='/users')
 
 @bp.route("/index", methods=["GET", "POST"])
@@ -46,6 +50,13 @@ def get():
         try:
             book = Book.query.filter(Book.author.name == a).all()
             book_result = book_schema.dump(book)
+            pipeline = [
+                    { "$match": { "author.name": a } },
+                    { "$group": {"_id" : "$title", 
+                        "count": {"$sum" :1 }
+                     } } ]
+            result = db.Book.aggregate(pipeline, cursor = {})
+            pprint.pprint(list(result))
             return render_template('users/get.html', books=book_result) 
         except:
             flash("Book not found")
