@@ -51,7 +51,7 @@ def get():
             book = Book.query.filter(Book.author.name == a).all()
             book_result = book_schema.dump(book)
             pipeline = [
-                    { "$match": { "author.name": 'Author 1' } },
+                    { "$match": { "author.name": a } },
                     { "$group": {"_id" : "$title", 
                         "count": {"$sum" :1 }
                      } } ]
